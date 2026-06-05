@@ -1,0 +1,133 @@
+.navbar {
+  background-color: var(--black);
+  padding: 0 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.logo-icon {
+  font-size: 24px;
+  color: var(--gold);
+}
+
+.logo-text {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--white);
+}
+
+.logo-accent {
+  color: var(--gold);
+}
+
+.navbar-links {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.navbar-links a {
+  color: var(--gray-mid);
+  font-size: 15px;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.navbar-links a:hover {
+  color: var(--gold);
+}
+
+.admin-link {
+  color: var(--gold) !important;
+  font-weight: 500;
+  border: 1px solid var(--gold);
+  padding: 4px 12px;
+  border-radius: var(--radius);
+  transition: all 0.2s;
+}
+
+.admin-link:hover {
+  background-color: var(--gold);
+  color: var(--black) !important;
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbar-username {
+  color: var(--gray-mid);
+  font-size: 14px;
+}
+
+.btn-logout {
+  background: transparent;
+  border: 1px solid var(--gray-text);
+  color: var(--gray-mid);
+  padding: 6px 14px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.btn-logout:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.navbar-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-login {
+  color: var(--gray-mid);
+  font-size: 14px;
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--gray-text);
+  transition: all 0.2s;
+}
+
+.btn-login:hover {
+  color: var(--white);
+  border-color: var(--white);
+}
+
+.btn-register {
+  background-color: var(--gold);
+  color: var(--black);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 6px 16px;
+  border-radius: var(--radius);
+  transition: background-color 0.2s;
+}
+
+.btn-register:hover {
+  background-color: var(--gold-dark);
+}

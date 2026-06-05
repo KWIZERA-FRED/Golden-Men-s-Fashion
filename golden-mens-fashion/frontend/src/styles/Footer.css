@@ -1,0 +1,67 @@
+.footer {
+  background-color: var(--black);
+  color: var(--gray-mid);
+  margin-top: auto;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+}
+
+.footer-logo {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--gold);
+  display: block;
+  margin-bottom: 10px;
+}
+
+.footer-brand p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--gray-text);
+}
+
+.footer-links h4,
+.footer-contact h4 {
+  color: var(--white);
+  font-size: 15px;
+  margin-bottom: 14px;
+}
+
+.footer-links ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-links a {
+  color: var(--gray-text);
+  font-size: 14px;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: var(--gold);
+}
+
+.footer-contact p {
+  font-size: 14px;
+  color: var(--gray-text);
+  margin-bottom: 6px;
+}
+
+.footer-bottom {
+  border-top: 1px solid #2a2a2a;
+  text-align: center;
+  padding: 1.2rem 2rem;
+  font-size: 13px;
+  color: var(--gray-text);
+}

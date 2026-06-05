@@ -1,0 +1,250 @@
+/* Login CSS */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--black) 0%, #2a2a2a 100%);
+  padding: 2rem;
+}
+
+.auth-container {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 3rem 2.5rem;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.auth-icon {
+  font-size: 48px;
+  color: var(--gold);
+  margin-bottom: 1rem;
+  line-height: 1;
+}
+
+.auth-header h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--black);
+  margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+  color: var(--gray-text);
+  font-size: 15px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--black);
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  font-size: 16px;
+  color: var(--gray-text);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding: 12px 14px 12px 42px;
+  border: 2px solid var(--gray-mid);
+  border-radius: var(--radius);
+  font-size: 14px;
+  color: var(--black);
+  transition: all 0.2s;
+  background: var(--white);
+}
+
+.input-wrapper input:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1);
+}
+
+.input-wrapper input.input-error {
+  border-color: var(--danger);
+}
+
+.input-wrapper input::placeholder {
+  color: #999;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.toggle-password:hover {
+  opacity: 1;
+}
+
+.error-message {
+  font-size: 13px;
+  color: var(--danger);
+  padding-left: 4px;
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--gray-text);
+}
+
+.remember-me input[type="checkbox"] {
+  accent-color: var(--gold);
+  width: 16px;
+  height: 16px;
+}
+
+.forgot-link {
+  color: var(--gold-dark);
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.forgot-link:hover {
+  color: var(--gold);
+}
+
+.btn-full {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  text-align: center;
+}
+
+.auth-divider {
+  position: relative;
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.auth-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--gray-mid);
+}
+
+.auth-divider span {
+  position: relative;
+  background: var(--white);
+  padding: 0 16px;
+  color: var(--gray-text);
+  font-size: 13px;
+}
+
+.social-auth {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.social-btn {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid var(--gray-mid);
+  border-radius: var(--radius);
+  background: var(--white);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.social-btn:hover {
+  border-color: var(--gold);
+  background: var(--gray-light);
+}
+
+.social-btn span {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--gold-dark);
+}
+
+.auth-footer {
+  text-align: center;
+  font-size: 14px;
+  color: var(--gray-text);
+}
+
+.auth-link {
+  color: var(--gold-dark);
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.auth-link:hover {
+  color: var(--gold);
+}
+
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 2rem 1.5rem;
+  }
+  
+  .form-options {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .social-auth {
+    flex-direction: column;
+  }
+}
