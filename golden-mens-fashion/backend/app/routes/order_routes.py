@@ -79,3 +79,55 @@ def create_order():
             "total": order.total
         }
     }), 201
+#Get user order
+@order_bp.route("/", methods=["GET"])
+@jwt_required()
+def get_user_orders():
+
+    user_id = get_jwt_identity()
+
+    orders = Order.query.filter_by(user_id=user_id).all()
+
+    return jsonify([
+        order.to_dict()
+        for order in orders
+    ])
+
+#Get single order
+@order_bp.route("/<int:order_id>", methods=["GET"])
+@jwt_required()
+def get_order(order_id):
+
+    user_id = get_jwt_identity()
+
+    order = Order.query.filter_by(
+        order_id=order_id,
+        user_id=user_id
+    ).first()
+
+    if not order:
+        return jsonify({"message": "Order not found"}), 404
+
+    return jsonify(order.to_dict())
+
+#Admin update status
+from app.utils.rbac import role_required
+
+
+@order_bp.route("/<int:order_id>/status", methods=["PUT"])
+@jwt_required()
+@role_required(["admin"])
+def update_status(order_id):
+
+    data = request.get_json()
+
+    order = Order.query.get_or_404(order_id)
+
+    order.status = data["status"]
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "Order status updated",
+        "status": order.status
+    })

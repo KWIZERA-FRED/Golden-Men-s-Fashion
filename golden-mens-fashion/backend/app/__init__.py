@@ -12,6 +12,7 @@ from app.extensions import (
 from app.models.user_model import User
 from app.models.product_model import Product
 from app.models.order_model import Order, OrderItem
+from app.models.cart_model import Cart, CartItem
 
 def create_app():
 
