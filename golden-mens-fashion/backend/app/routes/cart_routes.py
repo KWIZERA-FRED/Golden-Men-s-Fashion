@@ -10,7 +10,7 @@ cart_bp = Blueprint("cart_bp", __name__)
 
 #Add products to cart
 @cart_bp.route("/add", methods=["POST"])
-@jwt_required()
+@jwt_required() #Only authenticated users can use this endpoint.
 def add_to_cart():
 
     identity = get_jwt_identity()
@@ -31,7 +31,7 @@ def add_to_cart():
     if not cart:
         cart = Cart(user_id=user_id)
         db.session.add(cart)
-        db.session.flush()
+        db.session.flush()  #create an immediate cart id if the db for cart has none
 
     # check if item already exists
     existing_item = CartItem.query.filter_by(
@@ -56,3 +56,54 @@ def add_to_cart():
     return jsonify({
         "message": "Product added to cart"
     }), 201
+# view cart 
+@cart_bp.route("/", methods=["GET"])
+@jwt_required()
+def get_cart():
+
+    user_id = get_jwt_identity()
+
+    cart = Cart.query.filter_by(user_id=user_id).first()
+
+    if not cart:
+        return jsonify({
+            "cart_items": [],
+            "total": 0
+        })
+
+    items = []
+    total = 0
+
+    for item in cart.cart_items:
+
+        subtotal = item.quantity * item.product.price
+        total += subtotal
+
+        items.append({
+            "cart_item_id": item.cart_item_id,
+            "product_id": item.product.product_id,
+            "name": item.product.name,
+            "price": item.product.price,
+            "quantity": item.quantity,
+            "subtotal": subtotal
+        })
+
+    return jsonify({
+        "cart_items": items,
+        "total": total
+    })
+
+#Remove cart items
+@cart_bp.route("/remove/<int:item_id>", methods=["DELETE"])
+@jwt_required()
+def remove_from_cart(item_id):
+
+    item = CartItem.query.get_or_404(item_id)
+
+    db.session.delete(item)
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "Item removed from cart"
+    })

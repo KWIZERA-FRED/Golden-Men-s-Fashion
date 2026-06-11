@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import '../styles/Register.css'
 
 export default function Register() {
+  const navigate = useNavigate()
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -12,263 +14,285 @@ export default function Register() {
     confirmPassword: '',
     agreeTerms: false
   })
-  const [errors, setErrors] = useState({})
-  const [showPassword, setShowPassword] = useState(false)
-  const [step, setStep] = useState(1)
-  const navigate = useNavigate()
 
+  const [errors, setErrors] = useState({})
+  const [step, setStep] = useState(1)
+  const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const API_URL = "http://localhost:5000/api/auth/register";
+
+  // -------------------------
+  // HANDLE INPUT CHANGE
+  // -------------------------
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
-    setFormData(prev => ({ 
-      ...prev, 
-      [name]: type === 'checkbox' ? checked : value 
+
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
     }))
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }))
-    }
+
+    // clear field error on typing
+    setErrors(prev => ({
+      ...prev,
+      [name]: ''
+    }))
   }
 
+  // -------------------------
+  // VALIDATION STEP 1
+  // -------------------------
   const validateStep1 = () => {
-    const newErrors = {}
-    if (!formData.firstName.trim()) newErrors.firstName = 'First name is required'
-    if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required'
-    if (!formData.email.trim()) newErrors.email = 'Email is required'
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Invalid email format'
+    const err = {}
+
+    if (!formData.firstName.trim()) err.firstName = "First name is required"
+    if (!formData.lastName.trim()) err.lastName = "Last name is required"
+
+    if (!formData.email.trim()) err.email = "Email is required"
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) err.email = "Invalid email format"
+
     if (formData.phone && !/^\+?[\d\s-]{10,}$/.test(formData.phone)) {
-      newErrors.phone = 'Invalid phone number'
+      err.phone = "Invalid phone number"
     }
-    return newErrors
+
+    return err
   }
 
+  // -------------------------
+  // VALIDATION STEP 2
+  // -------------------------
   const validateStep2 = () => {
-    const newErrors = {}
-    if (!formData.password) newErrors.password = 'Password is required'
-    else if (formData.password.length < 8) newErrors.password = 'Must be at least 8 characters'
-    else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
-      newErrors.password = 'Must contain uppercase, lowercase & number'
-    }
+    const err = {}
+
+    if (!formData.password) err.password = "Password is required"
+    else if (formData.password.length < 8) err.password = "Minimum 8 characters"
+
     if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match'
+      err.confirmPassword = "Passwords do not match"
     }
-    if (!formData.agreeTerms) newErrors.agreeTerms = 'You must agree to the terms'
-    return newErrors
+
+    if (!formData.agreeTerms) {
+      err.agreeTerms = "You must accept terms"
+    }
+
+    return err
   }
 
+  // -------------------------
+  // NEXT STEP
+  // -------------------------
   const handleNext = (e) => {
     e.preventDefault()
-    const validationErrors = validateStep1()
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors)
+
+    const validation = validateStep1()
+    if (Object.keys(validation).length > 0) {
+      setErrors(validation)
       return
     }
+
     setStep(2)
   }
 
-  const handleSubmit = (e) => {
+  // -------------------------
+  // SUBMIT TO FLASK API
+  // -------------------------
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    const validationErrors = validateStep2()
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors)
+
+    const validation = validateStep2()
+    if (Object.keys(validation).length > 0) {
+      setErrors(validation)
       return
     }
-    // Add your registration logic here
-    console.log('Register:', formData)
-    navigate('/login')
+
+    setLoading(true)
+
+    try {
+      const payload = {
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        phone: formData.phone || null,
+        password: formData.password,
+        role: "user"
+      }
+
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.message || "Registration failed")
+      }
+
+      navigate('/login')
+
+    } catch (error) {
+      setErrors({ api: error.message })
+    } finally {
+      setLoading(false)
+    }
   }
 
+  // -------------------------
+  // PASSWORD STRENGTH
+  // -------------------------
   const passwordStrength = () => {
-    const { password } = formData
-    if (password.length === 0) return 0
-    let strength = 0
-    if (password.length >= 8) strength += 25
-    if (password.length >= 12) strength += 25
-    if (/(?=.*[a-z])(?=.*[A-Z])/.test(password)) strength += 25
-    if (/(?=.*\d)(?=.*[!@#$%^&*])/.test(password)) strength += 25
-    return strength
+    const p = formData.password
+    let score = 0
+
+    if (p.length >= 8) score += 25
+    if (p.length >= 12) score += 25
+    if (/[A-Z]/.test(p) && /[a-z]/.test(p)) score += 25
+    if (/\d/.test(p) && /[!@#$%^&*]/.test(p)) score += 25
+
+    return score
+  }
+
+  // -------------------------
+  // UI LABEL
+  // -------------------------
+  const getStrengthLabel = (score) => {
+    if (score <= 25) return "Weak"
+    if (score <= 50) return "Fair"
+    if (score <= 75) return "Good"
+    return "Strong"
   }
 
   return (
     <div className="auth-page">
       <div className="auth-container register-container">
+
         <div className="auth-header">
-          <div className="auth-icon">♛</div>
           <h1>Create Account</h1>
-          <p>Join the exclusive club</p>
+          <p>Join the platform</p>
         </div>
 
+        {errors.api && <p className="error-message">{errors.api}</p>}
+
+        {/* STEP INDICATOR */}
         <div className="step-indicator">
-          <div className={`step ${step >= 1 ? 'step-active' : ''}`}>
-            <span className="step-number">1</span>
-            <span className="step-label">Personal</span>
-          </div>
-          <div className="step-line"></div>
-          <div className={`step ${step >= 2 ? 'step-active' : ''}`}>
-            <span className="step-number">2</span>
-            <span className="step-label">Security</span>
-          </div>
+          <span className={step === 1 ? "active" : ""}>1. Info</span>
+          <span className={step === 2 ? "active" : ""}>2. Security</span>
         </div>
 
-        <form className="auth-form" onSubmit={step === 1 ? handleNext : handleSubmit}>
-          {step === 1 ? (
+        <form onSubmit={step === 1 ? handleNext : handleSubmit}>
+
+          {/* ---------------- STEP 1 ---------------- */}
+          {step === 1 && (
             <>
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="firstName">First Name</label>
-                  <input
-                    type="text"
-                    id="firstName"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    placeholder="John"
-                    className={errors.firstName ? 'input-error' : ''}
-                  />
-                  {errors.firstName && <span className="error-message">{errors.firstName}</span>}
-                </div>
-                <div className="form-group">
-                  <label htmlFor="lastName">Last Name</label>
-                  <input
-                    type="text"
-                    id="lastName"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    placeholder="Doe"
-                    className={errors.lastName ? 'input-error' : ''}
-                  />
-                  {errors.lastName && <span className="error-message">{errors.lastName}</span>}
-                </div>
-              </div>
+              <input
+                name="firstName"
+                placeholder="First Name"
+                value={formData.firstName}
+                onChange={handleChange}
+              />
+              <span>{errors.firstName}</span>
 
-              <div className="form-group">
-                <label htmlFor="email">Email Address</label>
-                <div className="input-wrapper">
-                  <span className="input-icon">✉</span>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="your@email.com"
-                    className={errors.email ? 'input-error' : ''}
-                  />
-                </div>
-                {errors.email && <span className="error-message">{errors.email}</span>}
-              </div>
+              <input
+                name="lastName"
+                placeholder="Last Name"
+                value={formData.lastName}
+                onChange={handleChange}
+              />
+              <span>{errors.lastName}</span>
 
-              <div className="form-group">
-                <label htmlFor="phone">Phone Number (Optional)</label>
-                <div className="input-wrapper">
-                  <span className="input-icon">📞</span>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="+250 700 000 000"
-                    className={errors.phone ? 'input-error' : ''}
-                  />
-                </div>
-                {errors.phone && <span className="error-message">{errors.phone}</span>}
-              </div>
+              <input
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+              <span>{errors.email}</span>
 
-              <button type="submit" className="btn-primary btn-full">
-                Continue
-                <span className="btn-arrow">→</span>
-              </button>
+              <input
+                name="phone"
+                placeholder="Phone (optional)"
+                value={formData.phone}
+                onChange={handleChange}
+              />
+              <span>{errors.phone}</span>
+
+              <button type="submit">Continue</button>
             </>
-          ) : (
+          )}
+
+          {/* ---------------- STEP 2 ---------------- */}
+          {step === 2 && (
             <>
-              <div className="form-group">
-                <label htmlFor="password">Password</label>
-                <div className="input-wrapper">
-                  <span className="input-icon">🔒</span>
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    id="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="Create a strong password"
-                    className={errors.password ? 'input-error' : ''}
-                  />
-                  <button
-                    type="button"
-                    className="toggle-password"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? '👁' : '👁‍🗨'}
-                  </button>
-                </div>
-                {errors.password && <span className="error-message">{errors.password}</span>}
-                
-                <div className="password-strength">
-                  <div className="strength-bar">
-                    <div 
-                      className={`strength-fill strength-${passwordStrength()}`} 
-                      style={{ width: `${passwordStrength()}%` }}
-                    ></div>
-                  </div>
-                  <span className="strength-label">
-                    {passwordStrength() <= 25 && 'Weak'}
-                    {passwordStrength() > 25 && passwordStrength() <= 50 && 'Fair'}
-                    {passwordStrength() > 50 && passwordStrength() <= 75 && 'Good'}
-                    {passwordStrength() > 75 && 'Strong'}
-                  </span>
-                </div>
-              </div>
+              <div className="password-box">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                />
 
-              <div className="form-group">
-                <label htmlFor="confirmPassword">Confirm Password</label>
-                <div className="input-wrapper">
-                  <span className="input-icon">🔒</span>
-                  <input
-                    type="password"
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    placeholder="Confirm your password"
-                    className={errors.confirmPassword ? 'input-error' : ''}
-                  />
-                </div>
-                {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
-              </div>
-
-              <div className="form-group">
-                <label className="checkbox-label">
-                  <input
-                    type="checkbox"
-                    name="agreeTerms"
-                    checked={formData.agreeTerms}
-                    onChange={handleChange}
-                  />
-                  <span>I agree to the <Link to="/terms" className="auth-link">Terms of Service</Link> and <Link to="/privacy" className="auth-link">Privacy Policy</Link></span>
-                </label>
-                {errors.agreeTerms && <span className="error-message">{errors.agreeTerms}</span>}
-              </div>
-
-              <div className="step-buttons">
-                <button 
-                  type="button" 
-                  className="btn-back"
-                  onClick={() => setStep(1)}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(prev => !prev)}
                 >
-                  ← Back
+                  {/* {showPassword ? "🙈" : "👁"} */}
                 </button>
-                <button type="submit" className="btn-primary btn-full">
-                  Create Account
+              </div>
+              <span>{errors.password}</span>
+
+              {/* Strength */}
+              <div className="strength">
+                <div
+                  className="bar"
+                  style={{ width: `${passwordStrength()}%` }}
+                />
+                <small>{getStrengthLabel(passwordStrength())}</small>
+              </div>
+
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+              />
+              <span>{errors.confirmPassword}</span>
+
+              <label>
+                <input
+                  type="checkbox"
+                  name="agreeTerms"
+                  checked={formData.agreeTerms}
+                  onChange={handleChange}
+                />
+                I agree to the{" "}
+                <Link to="/terms">Terms</Link> and{" "}
+                <Link to="/privacy">Privacy Policy</Link>
+              </label>
+              <span>{errors.agreeTerms}</span>
+
+              <div className="buttons">
+                <button type="button" onClick={() => setStep(1)}>
+                  Back
+                </button>
+
+                <button type="submit" disabled={loading}>
+                  {loading ? "Creating..." : "Create Account"}
                 </button>
               </div>
             </>
           )}
+
         </form>
 
-        <p className="auth-footer">
-          Already have an account? <Link to="/login" className="auth-link">Sign In</Link>
+        <p>
+          Already have an account? <Link to="/login">Login</Link>
         </p>
+
       </div>
     </div>
   )
