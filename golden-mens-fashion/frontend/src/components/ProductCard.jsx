@@ -2,23 +2,45 @@ import { Link } from 'react-router-dom'
 import '../styles/ProductCard.css'
 
 export default function ProductCard({ product }) {
+  const imageSrc = product?.image_url || product?.image || '/placeholder.png'
+  const price = Number(product?.price || 0)
+
   return (
-    <div className="product-card">
-      <div className="product-card-img">
-        {product.image ? (
-          <img src={product.image} alt={product.name} />
-        ) : (
-          <div className="product-card-placeholder">No Image</div>
-        )}
+    <article className="product-card">
+
+      <div className="product-card-image-wrapper">
+        <img
+          src={imageSrc}
+          alt={product?.name || 'Product image'}
+          loading="lazy"
+          className="product-card-image"
+          onError={(e) => { e.target.src = '/placeholder.png' }}
+        />
       </div>
-      <div className="product-card-info">
-        <h3 className="product-card-name">{product.name}</h3>
-        <p className="product-card-category">{product.category}</p>
-        <p className="product-card-price">RWF {product.price?.toLocaleString()}</p>
-        <Link to={`/products/${product.id}`} className="product-card-btn">
-          View Details
-        </Link>
+
+      <div className="product-card-content">
+
+        <div className="product-card-header">
+          <h3 className="product-card-title">{product?.name}</h3>
+          <span className="product-card-category">
+            {product?.category || 'Uncategorized'}
+          </span>
+        </div>
+
+        <div className="product-card-footer">
+          <p className="product-card-price">
+            RWF {price.toLocaleString()}
+          </p>
+
+          <Link
+            to={`/products/${product?.product_id}`}
+            className="product-card-button"
+          >
+            View Details
+          </Link>
+        </div>
+
       </div>
-    </div>
+    </article>
   )
 }

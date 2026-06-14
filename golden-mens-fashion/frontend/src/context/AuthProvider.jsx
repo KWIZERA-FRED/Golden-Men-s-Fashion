@@ -11,13 +11,32 @@ const initialState = {
 function authReducer(state, action) {
   switch (action.type) {
     case 'RESTORE':
-      return { user: action.user, role: action.role, token: action.token, loading: false }
+      return {
+        user: action.user,
+        role: action.role,
+        token: action.token,
+        loading: false,
+      }
+
     case 'LOGIN':
-      return { user: action.user, role: action.role, token: action.token, loading: false }
+      return {
+        user: action.user,
+        role: action.role,
+        token: action.token,
+        loading: false,
+      }
+
     case 'LOGOUT':
-      return { user: null, role: null, token: null, loading: false }
+      return {
+        user: null,
+        role: null,
+        token: null,
+        loading: false,
+      }
+
     case 'DONE_LOADING':
       return { ...state, loading: false }
+
     default:
       return state
   }
@@ -27,15 +46,16 @@ export default function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(authReducer, initialState)
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('gmf_user')
-    const savedRole = localStorage.getItem('gmf_role')
-    const savedToken = localStorage.getItem('gmf_token')
-    if (savedUser && savedRole && savedToken) {
+    const user = localStorage.getItem('gmf_user')
+    const role = localStorage.getItem('gmf_role')
+    const token = localStorage.getItem('gmf_token')
+
+    if (user && role && token) {
       dispatch({
         type: 'RESTORE',
-        user: JSON.parse(savedUser),
-        role: savedRole,
-        token: savedToken,
+        user: JSON.parse(user),
+        role,
+        token,
       })
     } else {
       dispatch({ type: 'DONE_LOADING' })
@@ -46,13 +66,20 @@ export default function AuthProvider({ children }) {
     localStorage.setItem('gmf_user', JSON.stringify(userData))
     localStorage.setItem('gmf_role', userRole)
     localStorage.setItem('gmf_token', userToken)
-    dispatch({ type: 'LOGIN', user: userData, role: userRole, token: userToken })
+
+    dispatch({
+      type: 'LOGIN',
+      user: userData,
+      role: userRole,
+      token: userToken,
+    })
   }
 
   const logout = () => {
     localStorage.removeItem('gmf_user')
     localStorage.removeItem('gmf_role')
     localStorage.removeItem('gmf_token')
+
     dispatch({ type: 'LOGOUT' })
   }
 

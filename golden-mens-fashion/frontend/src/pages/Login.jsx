@@ -1,119 +1,128 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState, useContext } from 'react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { AuthContext } from '../context/AuthContext'
 import '../styles/Login.css'
 
+const API_URL =
+  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
+
 export default function Login() {
-  const [formData, setFormData] = useState({ email: '', password: '' })
-  const [errors, setErrors] = useState({})
-  const [showPassword, setShowPassword] = useState(false)
+  const { login } = useContext(AuthContext)
+
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  })
+
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
   const navigate = useNavigate()
+  const location = useLocation()
+
+  // where user came from (important for protected routes)
+  const from = location.state?.from?.pathname || '/products'
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }))
-    }
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }))
   }
 
-  const validate = () => {
-    const newErrors = {}
-    if (!formData.email.trim()) newErrors.email = 'Email is required'
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Invalid email format'
-    if (!formData.password) newErrors.password = 'Password is required'
-    return newErrors
-  }
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    const validationErrors = validate()
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors)
-      return
+
+    try {
+      setLoading(true)
+      setError('')
+
+      const res = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Invalid email or password')
+      }
+
+      // normalize backend response safely
+      const user = data.user || null
+      const role = data.role || data.user?.role || 'user'
+      const token = data.access_token || data.token
+
+      if (!token) {
+        throw new Error('Authentication token missing from server response')
+      }
+
+      // store via context (this also writes localStorage in your provider)
+      login(user, role, token)
+
+      // redirect user back to intended page
+      navigate(from, { replace: true })
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
     }
-    // Add your login logic here
-    console.log('Login attempt:', formData)
-    navigate('/')
   }
 
   return (
     <div className="auth-page">
       <div className="auth-container">
+
         <div className="auth-header">
           <div className="auth-icon">♛</div>
           <h1>Welcome Back</h1>
-          <p>Sign in to your account</p>
+          <p>Sign in to continue your experience</p>
         </div>
 
-        <form className="auth-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email">Email Address</label>
-            <div className="input-wrapper">
-              <span className="input-icon">✉</span>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="your@email.com"
-                className={errors.email ? 'input-error' : ''}
-              />
-            </div>
-            {errors.email && <span className="error-message">{errors.email}</span>}
+        {error && (
+          <div className="error-message">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="auth-form">
+
+          <div className="input-group">
+            <input
+              name="email"
+              type="email"
+              placeholder="Email address"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <div className="input-wrapper">
-              <span className="input-icon">🔒</span>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Enter your password"
-                className={errors.password ? 'input-error' : ''}
-              />
-              <button
-                type="button"
-                className="toggle-password"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? '👁' : '👁‍🗨'}
-              </button>
-            </div>
-            {errors.password && <span className="error-message">{errors.password}</span>}
+          <div className="input-group">
+            <input
+              name="password"
+              type="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
           </div>
 
-          <div className="form-options">
-            <label className="remember-me">
-              <input type="checkbox" />
-              <span>Remember me</span>
-            </label>
-            <Link to="/forgot-password" className="forgot-link">Forgot password?</Link>
-          </div>
+          <button className="btn-primary btn-full" disabled={loading}>
+            {loading ? 'Signing you in...' : 'Login'}
+          </button>
 
-          <button type="submit" className="btn-primary btn-full">Sign In</button>
         </form>
 
-        <div className="auth-divider">
-          <span>or continue with</span>
+        <div className="auth-footer">
+          <p>
+            Don’t have an account?{' '}
+            <Link className="auth-link" to="/register">Create one</Link>
+          </p>
         </div>
 
-        <div className="social-auth">
-          <button className="social-btn">
-            <span>G</span> Google
-          </button>
-          <button className="social-btn">
-            <span>f</span> Facebook
-          </button>
-        </div>
-
-        <p className="auth-footer">
-          Don't have an account? <Link to="/register" className="auth-link">Sign Up</Link>
-        </p>
       </div>
     </div>
   )

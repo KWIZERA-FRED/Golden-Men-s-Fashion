@@ -334,3 +334,94 @@
   outline: none;
   border-color: var(--gold);
 }
+
+
+/* =========================
+   BESTSELLERS CAROUSEL
+========================= */
+
+.carousel-wrapper {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  padding: 10px 0;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 20px;
+  width: max-content;
+  animation: scrollLoop 25s linear infinite;
+}
+
+/* smooth infinite scroll */
+@keyframes scrollLoop {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* CARD */
+.carousel-card {
+  min-width: 240px;
+  max-width: 240px;
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.carousel-card:hover {
+  transform: translateY(-6px);
+}
+
+/* IMAGE */
+.carousel-img {
+  height: 200px;
+  overflow: hidden;
+  background: var(--gray-light);
+}
+
+.carousel-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.carousel-card:hover img {
+  transform: scale(1.08);
+}
+
+/* INFO */
+.carousel-info {
+  padding: 12px;
+}
+
+.carousel-info h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.carousel-cat {
+  font-size: 12px;
+  color: var(--gray-text);
+  margin-bottom: 6px;
+}
+
+.carousel-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold-dark);
+  margin-bottom: 10px;
+}
+
+/* PAUSE ON HOVER (IMPORTANT UX FEATURE) */
+.carousel-wrapper:hover .carousel-track {
+  animation-play-state: paused;
+}
