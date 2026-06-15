@@ -33,7 +33,7 @@ export default function About() {
             <p className="about-tag">Our Story</p>
             <h1>Crafting Confidence Since 2019</h1>
             <p className="about-hero-text">
-              Dapper was born from a simple belief: every man deserves to look and feel his best. 
+              Golden Men's Fasion was born from a simple belief: every man deserves to look and feel his best. 
               What started as a passion for fine tailoring has grown into Rwanda's premier destination for 
               sophisticated menswear.
             </p>

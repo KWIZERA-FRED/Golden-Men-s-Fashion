@@ -64,7 +64,7 @@ export default function Landing() {
       {/* HERO */}
       <section className="hero">
         <div className="hero-content">
-          <p className="hero-tag">New Season 2025</p>
+          <p className="hero-tag">New Season 2026</p>
 
           <h1 className="hero-title">
             Dressed for the <span className="hero-accent">Bold Man.</span>

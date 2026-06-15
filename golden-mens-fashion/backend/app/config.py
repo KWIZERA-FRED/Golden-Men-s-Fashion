@@ -1,40 +1,45 @@
-import os 
+import os
 from dotenv import load_dotenv
 from datetime import timedelta
 
-load_dotenv() #“Read the .env file and make its values available as environment variables.”
+load_dotenv()
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
+
 class Config:
 
-    SECRET_KEY = os.getenv("SECRET_KEY")
+    # ======================
+    # SECURITY
+    # ======================
+    SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-jwt-secret")
 
-    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
-
+    # ======================
+    # DATABASE
+    # ======================
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    SQLALCHEMY_TRACK_MODIFICATIONS = False  
-
+    # ======================
+    # JWT CONFIG
+    # ======================
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
 
-
-    # upload settings
-    UPLOAD_FOLDER = os.path.join(
-        BASE_DIR,
-        "..",
-        "uploads"
-    )
+    # ======================
+    # FILE UPLOADS
+    # ======================
+    UPLOAD_FOLDER = os.path.join(BASE_DIR, "..", "uploads")
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5MB
 
-    #E-mail config
-    MAIL_SERVER = "smtp.gmail.com"
-    MAIL_PORT = 587
+    # ======================
+    # EMAIL (PRODUCTION SAFE)
+    # ======================
+    MAIL_SERVER = os.getenv("MAIL_SERVER", "smtp.gmail.com")
+    MAIL_PORT = int(os.getenv("MAIL_PORT", 587))
     MAIL_USE_TLS = True
 
-    MAIL_USERNAME = "your_email@gmail.com"
-    MAIL_PASSWORD = "your_google_app_password"
+    MAIL_USERNAME = os.getenv("MAIL_USERNAME")
+    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
 
-    MAIL_DEFAULT_SENDER = "your_email@gmail.com"
-
-     
+    MAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER")
