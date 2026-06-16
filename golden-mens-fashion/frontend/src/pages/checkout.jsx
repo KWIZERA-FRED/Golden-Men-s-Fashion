@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
-import '../styles/Checkout.css'
+import '../styles/Checkout.css' //fixed checkout.css
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
 
