@@ -1,5 +1,6 @@
 from flask import Flask, send_from_directory
 from flask_cors import CORS
+import os
 
 from app.config import Config
 
@@ -24,9 +25,7 @@ from app.models.order_model   import Order, OrderItem
 from app.models.cart_model    import Cart, CartItem
 from app.models.payment_model import Payment
 
-
 def create_app():
-
     app = Flask(__name__)
     app.config.from_object(Config)
 
@@ -34,9 +33,14 @@ def create_app():
     app.url_map.strict_slashes = False
 
     # ── CORS ─────────────────────────────────────────────────
+    # We allow local dev and your live Netlify production site
+    # Ensure ALLOWED_ORIGINS is set in your Railway Environment Variables
+    origins_env = os.environ.get("ALLOWED_ORIGINS", "http://localhost:5173,https://goldenmensfashion.netlify.app")
+    allowed_origins = [origin.strip() for origin in origins_env.split(",")]
+
     CORS(
         app,
-        resources={r"/api/*": {"origins": "http://localhost:5173"}},
+        resources={r"/api/*": {"origins": allowed_origins}},
         supports_credentials=True
     )
 
