@@ -20,7 +20,7 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const API_URL = "http://localhost:5000/api/auth/register";
+  const API_URL = "https://golden-men-s-fashion-production.up.railway.app/api/auth/register";
 
   // -------------------------
   // HANDLE INPUT CHANGE
