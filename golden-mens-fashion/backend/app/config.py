@@ -6,9 +6,7 @@ load_dotenv()
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-
 class Config:
-
     # ======================
     # SECURITY
     # ======================
@@ -20,11 +18,11 @@ class Config:
     # ======================
     DATABASE_URL = os.getenv("DATABASE_URL")
 
-    SQLALCHEMY_DATABASE_URI = (
-        DATABASE_URL.replace("mysql://", "mysql+pymysql://")
-        if DATABASE_URL
-        else None
-    )
+    # Fallback to local SQLite if DATABASE_URL is missing (for local migrations)
+    if DATABASE_URL:
+        SQLALCHEMY_DATABASE_URI = DATABASE_URL.replace("mysql://", "mysql+pymysql://")
+    else:
+        SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(BASE_DIR, 'dev.db')}"
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
