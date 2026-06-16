@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from datetime import timedelta
 
+# Load environment variables from .env file
 load_dotenv()
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -18,10 +19,15 @@ class Config:
     # ======================
     DATABASE_URL = os.getenv("DATABASE_URL")
 
-    # Fallback to local SQLite if DATABASE_URL is missing (for local migrations)
+    # Safely handle the connection string to prevent parsing errors
     if DATABASE_URL:
-        SQLALCHEMY_DATABASE_URI = DATABASE_URL.replace("mysql://", "mysql+pymysql://")
+        # If the URL is provided, ensure it uses the correct pymysql driver
+        if "mysql://" in DATABASE_URL and "mysql+pymysql://" not in DATABASE_URL:
+            SQLALCHEMY_DATABASE_URI = DATABASE_URL.replace("mysql://", "mysql+pymysql://")
+        else:
+            SQLALCHEMY_DATABASE_URI = DATABASE_URL
     else:
+        # Fallback to local SQLite for local development
         SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(BASE_DIR, 'dev.db')}"
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -43,7 +49,6 @@ class Config:
     MAIL_SERVER = os.getenv("MAIL_SERVER", "smtp.gmail.com")
     MAIL_PORT = int(os.getenv("MAIL_PORT", 587))
     MAIL_USE_TLS = True
-
     MAIL_USERNAME = os.getenv("MAIL_USERNAME")
     MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
     MAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER")
