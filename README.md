@@ -2,6 +2,7 @@
 
 ## 📌 Student Information
 * **Student Name:** Kwizera Fred
+* **Registration number:** 23718/2024
 * **Course:** E-Commerce and Web Application (EWA408510)
 * **Institution:** University of Lay Adventists of Kigali (UNILAK)
 * **Academic Year:** 2025-2026 | Semester: II
