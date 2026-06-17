@@ -19,7 +19,7 @@
 ---
 
 ## 🎨 Platform & Design Choice
-* **Platform/Stack:** Low-Code Custom Framework / Tailored Template Engine with a responsive front-end dashboard, styled with dark themes, gold highlights, and modern glassmorphism panels to match luxury branding standards.
+* **Platform/Stack:** Highly detailed fullstack website with a responsive front-end dashboard, styled with dark themes, gold highlights, and modern glassmorphism panels to match luxury branding standards.
 * **Design Philosophy:** Premium luxury minimalist UI featuring a dark ambient color scheme (`#121212`), high-contrast typography, crisp visual cards, interactive quick actions, and clean statistics visualizations.
 
 ---
