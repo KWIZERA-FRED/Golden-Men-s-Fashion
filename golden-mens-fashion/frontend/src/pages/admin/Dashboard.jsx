@@ -52,39 +52,45 @@ export default function Dashboard() {
 
   // --- Side Effects ---
   useEffect(() => {
+    if (!token) return
+
     const loadDashboard = async () => {
       try {
         setLoading(true)
-        setError("")
+        
+        const headers = {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        }
 
-        // Execute both independent fetches in parallel for faster initial loading
-        const [statsRes, chartsRes] = await Promise.all([
-          fetch(`${API_URL}/admin/stats`, {
-            headers: { Authorization: `Bearer ${token}` }
-          }),
-          fetch(`${API_URL}/admin/stats/charts`, {
-            headers: { Authorization: `Bearer ${token}` }
-          })
-        ])
+        // Fetch Stats
+        const statsRes = await fetch(`${API_URL}/admin/stats`, {
+          method: "GET",
+          headers
+        })
+        if (!statsRes.ok) throw new Error("Unable to load dashboard statistics")
+        const statsData = await statsRes.json()
 
-        if (!statsRes.ok) throw new Error("Unable to load statistics")
-        if (!chartsRes.ok) throw new Error("Unable to load charts")
+        // Fetch Charts
+        const chartsRes = await fetch(`${API_URL}/admin/stats/charts`, {
+          method: "GET",
+          headers
+        })
+        if (!chartsRes.ok) throw new Error("Unable to load dashboard charts")
+        const chartsData = await chartsRes.json()
 
-        const [statsData, chartsData] = await Promise.all([
-          statsRes.json(),
-          chartsRes.json()
-        ])
-
+        // Update State
         setStats(statsData)
         setCharts(chartsData)
       } catch (err) {
+        console.error(err)
         setError(err.message)
       } finally {
         setLoading(false)
       }
     }
 
-    if (token) loadDashboard()
+    loadDashboard()
   }, [token])
 
   // --- Memoized Configuration Data ---
@@ -144,8 +150,8 @@ export default function Dashboard() {
       <div className="dashboard-grid">
         {cards.map((card) => (
           <div
-            className="stat-card"
             key={card.label}
+            className="stat-card"
             onClick={() => navigate(card.path)}
           >
             <div className="stat-icon">{card.icon}</div>
