@@ -19,49 +19,104 @@ from app.routes.cart_routes    import cart_bp
 from app.routes.payment_routes import payment_bp
 from app.routes.admin_routes   import admin_bp
 
+
+# Models
 from app.models.user_model    import User
 from app.models.product_model import Product
 from app.models.order_model   import Order, OrderItem
 from app.models.cart_model    import Cart, CartItem
 from app.models.payment_model import Payment
 
+# Recommendation system model
+from app.models.recommendation_model import RecommendationInteraction
+
+
 def create_app():
+
     app = Flask(__name__)
     app.config.from_object(Config)
+
 
     # ── Stops Flask redirecting /api/orders → /api/orders/ ──
     app.url_map.strict_slashes = False
 
+
     # ── CORS ─────────────────────────────────────────────────
-    # We allow local dev and your live Netlify production site
-    # Ensure ALLOWED_ORIGINS is set in your Railway Environment Variables
-    origins_env = os.environ.get("ALLOWED_ORIGINS", "http://localhost:5173,https://goldenmensfashion.netlify.app")
-    allowed_origins = [origin.strip() for origin in origins_env.split(",")]
+
+    origins_env = os.environ.get(
+        "ALLOWED_ORIGINS",
+        "http://localhost:5173,https://goldenmensfashion.netlify.app"
+    )
+
+    allowed_origins = [
+        origin.strip()
+        for origin in origins_env.split(",")
+    ]
+
 
     CORS(
         app,
-        resources={r"/api/*": {"origins": allowed_origins}},
+        resources={
+            r"/api/*": {
+                "origins": allowed_origins
+            }
+        },
         supports_credentials=True
     )
 
+
     # ── Extensions ───────────────────────────────────────────
+
     db.init_app(app)
     migrate.init_app(app, db)
     bcrypt.init_app(app)
     jwt.init_app(app)
     mail.init_app(app)
 
+
+
     # ── Blueprints ───────────────────────────────────────────
-    app.register_blueprint(auth_bp,     url_prefix="/api/auth")
-    app.register_blueprint(product_bp,  url_prefix="/api/products")
-    app.register_blueprint(order_bp,    url_prefix="/api/orders")
-    app.register_blueprint(cart_bp,     url_prefix="/api/cart")
-    app.register_blueprint(payment_bp,  url_prefix="/api/payments")
-    app.register_blueprint(admin_bp,    url_prefix="/api/admin")
+
+    app.register_blueprint(
+        auth_bp,
+        url_prefix="/api/auth"
+    )
+
+    app.register_blueprint(
+        product_bp,
+        url_prefix="/api/products"
+    )
+
+    app.register_blueprint(
+        order_bp,
+        url_prefix="/api/orders"
+    )
+
+    app.register_blueprint(
+        cart_bp,
+        url_prefix="/api/cart"
+    )
+
+    app.register_blueprint(
+        payment_bp,
+        url_prefix="/api/payments"
+    )
+
+    app.register_blueprint(
+        admin_bp,
+        url_prefix="/api/admin"
+    )
+
 
     # ── Uploads ──────────────────────────────────────────────
+
     @app.route("/uploads/<filename>")
     def uploaded_file(filename):
-        return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+
+        return send_from_directory(
+            app.config["UPLOAD_FOLDER"],
+            filename
+        )
+
 
     return app
