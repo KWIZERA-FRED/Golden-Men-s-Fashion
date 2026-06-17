@@ -13,7 +13,7 @@
 ## 🏬 Project Overview
 **Golden MF (Golden Men's Fashion)** is a premium e-commerce platform designed for modern gentlemen, specialized in offering high-end, sophisticated menswear and tailor-fitted suits in Rwanda and across East Africa. Born from a simple belief that every man deserves to look and feel his best, the store blends artisan excellence with streamlined digital shopping experiences.
 
-* **Live Website Link:** [Click Here to View Live Website](https://github.com/) *(Replace with your actual hosted link)*
+* **Live Website Link:** [Click Here to View Live Website](https://goldenmensfashion.netlify.app/) *(Replace with your actual hosted link)*
 * **GitHub Repository:** [Click Here to View Repository](https://github.com/) *(Replace with your actual repository link)*
 
 ---
