@@ -792,3 +792,93 @@
   border-radius: 20px;
   border: 1px solid rgba(0,0,0,0.04);
 }
+
+/* ==========================================
+   REACT ICON STAT CARDS
+========================================== */
+.stat-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  background: linear-gradient(135deg, #f0ede8, #faf9f7);
+  color: #1a1a1a;
+  transition: .25s ease;
+}
+
+.stat-card:hover .stat-icon {
+  transform: scale(1.08);
+  background: #1a1a1a;
+  color: #fff;
+}
+
+/* ==========================================
+   DASHBOARD CHARTS
+========================================== */
+.charts-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
+  margin-top: 40px;
+  margin-bottom: 45px;
+}
+
+.chart-card {
+  background: #fff;
+  padding: 30px;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, .04);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, .06);
+  transition: .25s ease;
+}
+
+.chart-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, .12);
+}
+
+.chart-card h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.revenue-chart {
+  grid-column: span 2;
+}
+
+/* --- Recharts Overrides --- */
+.recharts-wrapper {
+  font-family: 'Inter', sans-serif;
+}
+
+/* ==========================================
+   RESPONSIVE MEDIA QUERIES
+========================================== */
+@media(max-width: 1000px) {
+  .charts-container {
+    grid-template-columns: 1fr;
+  }
+
+  .revenue-chart {
+    grid-column: auto;
+  }
+}
+
+@media(max-width: 640px) {
+  .stat-icon {
+    width: 52px;
+    height: 52px;
+    font-size: 1.5rem;
+  }
+
+  .chart-card {
+    padding: 20px;
+  }
+}
